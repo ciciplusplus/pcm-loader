@@ -13,6 +13,7 @@ publish = false # TODO: Remove this when ready to publish
 [features]
 default = ["flac", "mkv", "ogg", "pcm", "vorbis", "wav"]
 aac = ["symphonia/aac"]
+adpcm = ["symphonia/adpcm"]
 alac = ["symphonia/alac"]
 flac = ["symphonia/flac"]
 isomp4 = ["symphonia/isomp4"]
