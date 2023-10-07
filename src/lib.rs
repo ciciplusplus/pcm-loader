@@ -1,4 +1,5 @@
 use std::fs::File;
+use std::io::Cursor;
 use std::path::Path;
 
 use fnv::FnvHashMap;
@@ -152,6 +153,31 @@ impl PcmLoader {
         // Create the media source stream.
         let mss = MediaSourceStream::new(Box::new(file), Default::default());
 
+        self.load_common(hint, mss, target_sample_rate, resample_quality, max_bytes)
+    }
+
+    pub fn load_memory<T: AsRef<[u8]> + Send + Sync + 'static>(
+        &mut self,
+        reader: Cursor<T>,
+        target_sample_rate: Option<u32>,
+        resample_quality: ResampleQuality,
+        max_bytes: Option<usize>,
+    ) -> Result<PcmRAM, PcmLoadError> {
+        let hint = Hint::new();
+
+        let mss = MediaSourceStream::new(Box::new(reader), Default::default());
+
+        self.load_common(hint, mss, target_sample_rate, resample_quality, max_bytes)
+    }
+
+    fn load_common(
+        &mut self,
+        hint: Hint,
+        mss: MediaSourceStream,
+        target_sample_rate: Option<u32>,
+        resample_quality: ResampleQuality,
+        max_bytes: Option<usize>,
+    ) -> Result<PcmRAM, PcmLoadError> {
         // Use the default options for format reader, metadata reader, and decoder.
         let format_opts: FormatOptions = Default::default();
         let metadata_opts: MetadataOptions = Default::default();
